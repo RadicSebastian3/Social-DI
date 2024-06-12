@@ -1,0 +1,112 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,800;6..12,1000&display=swap');
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+  --box-shadow: 0px 10px 15px -3px rgba(0,0,0,0.1);
+}
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  text-decoration: none;
+  text-transform: capitalize;
+  outline: none;
+  border: none;
+}
+
+html {
+  font-size: 62.5%;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Style the scrollbar thumb (the draggable part) */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Change the cursor when hovering over the scrollbar */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* For Firefox */
+/* Set the width of the scrollbar */
+.scroll-container {
+  scrollbar-width: thin; /* "thin" or "auto" */
+}
+
+/* Set the color of the scrollbar thumb and track */
+.scroll-container {
+  scrollbar-color: #888 #f1f1f1; /* thumb-color track-color */
+}
+
+/* Change the cursor when hovering over the scrollbar thumb */
+.scroll-container::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+body {
+  font-family: 'Nunito Sans', sans-serif;
+  color: #0A0908;
+  background: #F2F4F3;
+}
+
+input {
+  text-transform: none;
+}
+
+
+#header {
+  box-shadow: var(--box-shadow);
+  padding: 2rem 5%;
+}
+
+.hamburger {
+  padding: 3rem;
+  width: 50rem;
+}
+
+.hamburger ul {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 3rem;
+}
+
+.hamburger ul li {
+  font-size: 2rem;
+  font-weight: 600;
+  border: 1rem solid transparent;
+}
+
+.hamburger ul li:hover {
+  border-bottom: 1rem solid #B4C5E4;
+}
+
+#notificationSize {
+  height: 35rem;
+  max-height: 100%;
+}
+@media screen and (max-wdith: 450px){
+  #notificationSize {
+    width: 100%;
+  }
+}
+
+/* Home Area */
+
+
+/* People Area */
