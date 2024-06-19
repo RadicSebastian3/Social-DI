@@ -1,7 +1,8 @@
-import { useAuthUser } from "@/contexts/LoginUser"
-import { ResetPassword } from "../template/ResetPassword"
+import { useAuthUser } from "@/contexts/LoginUser";
+import { ResetPassword } from "../template/ResetPassword";
 import { useState } from 'react';
 import { useNavigate } from "react-router-dom";
+import { Link } from 'react-router-dom';
 
 export const Login = () => {
   const userAuthCtx = useAuthUser();
@@ -9,23 +10,26 @@ export const Login = () => {
 
   const [warn, setWarn] = useState(false);
 
-  const validateUser = () => {
+  const validateUser = async () => {
+    try {
+      const trimmedName = userAuthCtx?.name.trim();
+      const trimmedPassword = userAuthCtx?.password.trim();
 
-    const trimmedName = userAuthCtx?.name.trim();
-    const trimmedPassword = userAuthCtx?.password.trim();
-
-    if (trimmedName === userAuthCtx?.Usernamekey && trimmedPassword === userAuthCtx?.PasswordKey) {
-      navigate('/Home');
-    } else {
+      if (await userAuthCtx?.loginUser(trimmedName, trimmedPassword)) {
+        navigate('/Home');
+      } else {
+        setWarn(true);
+      }
+    } catch (error) {
       setWarn(true);
     }
   };
 
-  const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (event) => event.key === 'Enter' ? validateUser : null;
+  const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (event) => {
+    if (event.key === 'Enter') validateUser();
+  };
 
-
-
-  return <>
+  return (
     <div className="min-h-screen flex items-center justify-center bg-blue-900 text-white">
       <div className="w-full max-w-md p-4 bg-white rounded-md shadow-md" style={{ width: "90vw", maxWidth: "40rem", padding: "1rem" }}>
         <h1 className="text-3xl font-extrabold text-center mb-6">Login</h1>
@@ -62,10 +66,10 @@ export const Login = () => {
               Send
             </button>
             <ResetPassword />
+            <Link to="/register" className="text-blue-700 text-center mt-4">Don't have an account? Register here</Link>
           </div>
         </form>
       </div>
     </div>
-  </>
+  );
 };
-
