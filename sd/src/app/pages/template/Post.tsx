@@ -1,54 +1,62 @@
-import React, { useEffect, useState } from 'react'
-import { addNewPost } from '@/app/data/postData';
+import React, { useState, useEffect } from 'react';
+import { addNewPost, getAllPosts } from '@/app/data/postData'; // Pfade entsprechend anpassen
 import { Post as PostType } from '@/app/types/PostsType';
 import { Posts } from './Posts';
-import { api } from '@/api/Api';
 import { useAuthUser } from '@/contexts/LoginUser';
 import { PostForm } from './PostForm';
 
 export const Post = () => {
     const [post, setPost] = useState('');
     const [error, setError] = useState('');
-    const [json, setJson] = useState('');
+    const [posts, setPosts] = useState<PostType[]>([]);
+    const userCtx = useAuthUser();
 
-    const usernameCtx = useAuthUser();
+    useEffect(() => {
+        fetchPosts(); // Beim Laden der Komponente alle Posts abrufen
+    }, []);
 
-
-    useEffect(() => { getDataFromApi(); })
-
-    const getDataFromApi = async () => {
-        let json = await api.getUserAvatar();
-        setJson(json.message)
-    }
+    const fetchPosts = async () => {
+        try {
+            const fetchedPosts = await getAllPosts();
+            setPosts(fetchedPosts);
+        } catch (error) {
+            console.error('Error fetching posts:', error);
+        }
+    };
 
     const handlePost = (e: React.ChangeEvent<HTMLTextAreaElement>) => setPost(e.target.value);
 
     const handleWithWhiteSpace = () => post.trim() === '';
 
-
-    const createANewPost = () => {
+    const createANewPost = async () => {
         if (handleWithWhiteSpace()) {
-            setError('You need to write down a post to display it.');
-        } else {
+            setError('Du musst einen Beitrag schreiben, um ihn anzuzeigen.');
+        } else if (userCtx && userCtx.name) {
             const newPost: PostType = {
-                id: new Date().getMilliseconds() as number,
-                userId: new Date().getMilliseconds() as number,
-                post: post as string,
-                postedBy: usernameCtx?.name as string,
+                id: new Date().getTime(), // Beispielhafte ID-Erzeugung (Timestamp)
+                userId: new Date().getTime(), // Beispielhafte Benutzer-ID (Timestamp)
+                post: post,
+                postedBy: userCtx.name,
                 date: `${new Date().toLocaleDateString()} - ${new Date().getHours()}:${new Date().getMinutes()}`,
-                avatar: `${usernameCtx?.photo ? usernameCtx?.photo : json}`,
+                avatar: userCtx.photo || "default-avatar-url" // Verwenden Sie das Benutzerfoto oder einen Standardwert
             };
-            addNewPost(newPost);
-            setPost('');
-            setError('');
+
+            try {
+                await addNewPost(newPost); // Post in der Datenbank speichern
+                setPosts([newPost, ...posts]); // Neuen Post zur Liste hinzufügen
+                setPost('');
+                setError('');
+            } catch (error) {
+                console.error('Error adding new post:', error);
+            }
+        } else {
+            setError('Benutzer nicht authentifiziert.');
         }
     };
 
-
-
-    return <>
-        <main className=''>
-            <section className='mt-6 md:mt-6 lg:mt-16 xl:mt-16 '>
+    return (
+        <main>
+            <section className='mt-6 md:mt-6 lg:mt-16 xl:mt-16'>
                 <PostForm
                     createANewPost={createANewPost}
                     error={error}
@@ -59,8 +67,8 @@ export const Post = () => {
             </section>
 
             <section className='flex flex-col flex-1 gap-8 mt-8'>
-                <Posts />
+                <Posts posts={posts} /> {/* Übergeben Sie die gespeicherten Posts als Prop */}
             </section>
-        </main >
-    </>
-}
+        </main>
+    );
+};
